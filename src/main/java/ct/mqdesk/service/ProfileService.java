@@ -63,17 +63,17 @@ public class ProfileService implements UserDetailsService {
         return null;
     }
 
-    public void sendPassword(final Map<String, String> params) {
+    public void resetPassword(final Map<String, String> params) {
         final String email = params.get("params");
         if (!email.contains("@")) {
-            throw new RuntimeException("Votre mail invalide");
+            throw new IllegalArgumentException("Votre mail invalide");
         }
         if (!email.contains(".")) {
-            throw new RuntimeException("Votre mail invalide");
+            throw new IllegalArgumentException("Votre mail invalide");
         }
         final Optional<Profile> profileOptional = this.profileRepository.findByEmail(email);
         if (profileOptional.isEmpty()) {
-            throw new RuntimeException("Votre mail est inconnu");
+            throw new IllegalArgumentException("Votre mail est inconnu");
         }
         final MQDeskAccount mqDeskAccount = this.mqDeskAccountService.readUserAccount(email);
 

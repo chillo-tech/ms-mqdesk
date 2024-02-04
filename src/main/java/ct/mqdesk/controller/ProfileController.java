@@ -29,7 +29,7 @@ public class ProfileController {
     @PostMapping(path = "password")
     public void sendPassword(@RequestBody final Map<String, String> params) {
         ProfileController.log.info("password");
-        this.profileService.sendPassword(params);
+        this.profileService.resetPassword(params);
     }
 
 }

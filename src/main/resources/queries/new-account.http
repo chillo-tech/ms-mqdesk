@@ -1,0 +1,10 @@
+POST http://localhost:8080/api/inscription
+Content-Type: application/json
+
+{
+  "lastName": "SIMO",
+  "firstName": "Achille",
+  "email": "simachille@gmail.com"
+}
+
+###

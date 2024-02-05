@@ -64,7 +64,7 @@ public class ProfileService implements UserDetailsService {
     }
 
     public void sendPassword(final Map<String, String> params) {
-        final String email = params.get("params");
+        final String email = params.get("email");
         if (!email.contains("@")) {
             throw new RuntimeException("Votre mail invalide");
         }

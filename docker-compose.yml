@@ -6,7 +6,7 @@ services:
     image: ms-mqdesk:latest
     restart: always
     ports:
-      - "9090:8080"
+      - "9090:80"
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
       - "spring.rabbitmq.host=${RABBITMQ_IP}"

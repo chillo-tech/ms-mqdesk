@@ -21,9 +21,9 @@ jobs:
           username: ${{ secrets.PROD_APPLICATIONS_USERNAME }}
           key: ${{ secrets.PROD_APPLICATIONS_SSH_PRIVATE_KEY }}
           script: |
-            sudo rm -rf ${{ env.FOLDER }}
-            sudo mkdir -p  ${{ env.FOLDER }}
-            sudo chmod ugo+rwx  ${{ env.FOLDER }}
+            sudo rm -rf ${{ env.FOLDER }}/${{ env.IMAGE }}
+            sudo mkdir -p  ${{ env.FOLDER }}/${{ env.IMAGE }}
+            sudo chmod ugo+rwx  ${{ env.FOLDER }}/${{ env.IMAGE }}
 
   copy-configs:
     name: 'copy configs'
@@ -38,8 +38,8 @@ jobs:
           port: ${{ secrets.PROD_APPLICATIONS_PORT }}
           username: ${{ secrets.PROD_APPLICATIONS_USERNAME }}
           key: ${{ secrets.PROD_APPLICATIONS_SSH_PRIVATE_KEY }}
-          source: 'docker-compose.yml'
-          target: ${{ env.FOLDER }}
+          source: docker-compose.yml
+          target: ${{ env.FOLDER }}/${{ env.IMAGE }}
 
   dockerize:
     runs-on: ubuntu-latest
@@ -56,9 +56,6 @@ jobs:
       - name: Build with Maven
         run: mvn -Dmaven.test.skip=true clean compile package
 
-      - name: rename
-        run: |
-          ls -al target
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and export
@@ -83,9 +80,6 @@ jobs:
         with:
           name: ${{env.IMAGE}}
           path: .
-      - name: Check artifact
-        run: |
-          ls -al /tmp
       - name: copy file via ssh password
         uses: appleboy/scp-action@master
         with:
@@ -124,29 +118,28 @@ jobs:
           username: ${{ secrets.PROD_APPLICATIONS_USERNAME }}
           key: ${{ secrets.PROD_APPLICATIONS_SSH_PRIVATE_KEY }}
           script: |
-            docker compose -f ${{ env.FOLDER }}/docker-compose.yml stop
-            docker compose -f ${{ env.FOLDER }}/docker-compose.yml rm -f
+            docker compose -f ${{ env.FOLDER }}/${{ env.IMAGE }}/docker-compose.yml stop
+            docker compose -f ${{ env.FOLDER }}/${{ env.IMAGE }}/docker-compose.yml rm -f
 
+            echo RABBITMQ_IP=${{ secrets.RABBITMQ_IP }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
 
-            echo RABBITMQ_IP=${{ secrets.RABBITMQ_IP }} >> ${{ env.FOLDER }}/.env
-            echo RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }} >> ${{ env.FOLDER }}/.env
-            echo RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }} >> ${{ env.FOLDER }}/.env
-            echo RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }} >> ${{ env.FOLDER }}/.env
+            echo DB_URI=${{ secrets.DB_URI }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
 
-            echo DB_URI=${{ secrets.DB_URI }} >> ${{ env.FOLDER }}/.env
-            echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> ${{ env.FOLDER }}/.env
-            echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> ${{ env.FOLDER }}/.env
+            echo BREVO_API_KEY=${{ secrets.BREVO_API_KEY }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
 
-            echo BREVO_API_KEY=${{ secrets.BREVO_API_KEY }} >> ${{ env.FOLDER }}/.env
+            echo RABBITMQ_IP=${{ secrets.RABBITMQ_IP }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
 
-            echo RABBITMQ_IP=${{ secrets.RABBITMQ_IP }} >> ${{ env.FOLDER }}/.env
-            echo RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }} >> ${{ env.FOLDER }}/.env
-            echo RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }} >> ${{ env.FOLDER }}/.env
+            echo CLIENT_API_TOKEN=${{ secrets.CLIENT_API_TOKEN }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo CONTACT_API=${{ secrets.CONTACT_API }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
+            echo CONTACT_API_TOKEN=${{ secrets.CONTACT_API_TOKEN }} >> ${{ env.FOLDER }}/${{ env.IMAGE }}/.env
 
-            echo CLIENT_API_TOKEN=${{ secrets.CLIENT_API_TOKEN }} >> ${{ env.FOLDER }}/.env
-            echo CONTACT_API=${{ secrets.CONTACT_API }} >> ${{ env.FOLDER }}/.env
-            echo CONTACT_API_TOKEN=${{ secrets.CONTACT_API_TOKEN }} >> ${{ env.FOLDER }}/.env
+            sudo docker compose -f ${{ env.FOLDER }}/${{ env.IMAGE }}/docker-compose.yml up -d
 
-            sudo docker compose -f ${{ env.FOLDER }}/docker-compose.yml up -d
-
-            rm -f ${{ env.FOLDER }}/.env
+            rm -f ${{ env.FOLDER }}/${{ env.IMAGE }}/.env

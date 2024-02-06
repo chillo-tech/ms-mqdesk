@@ -83,6 +83,24 @@ public class ProfileService implements UserDetailsService {
         this.brevoService.sendPassword(mqDeskAccount, password);
     }
 
+    public void sendPassword(final Map<String, String> params) {
+        final String email = params.get("email");
+        if (!email.contains("@")) {
+            throw new IllegalArgumentException("Votre mail invalide");
+        }
+        if (!email.contains(".")) {
+            throw new IllegalArgumentException("Votre mail invalide");
+        }
+        MQDeskAccount mqDeskAccount = this.mqDeskAccountService.readUserAccount(email);
+        final String password = RandomStringUtils.randomAlphanumeric(10);
+        final String encodedPassword = this.passwordEncoder.encode(password);
+        mqDeskAccount.setPassword(encodedPassword);
+        mqDeskAccount = this.mqDeskAccountService.save(mqDeskAccount);
+
+        this.rabbitMQService.createUser(mqDeskAccount, password);
+        this.brevoService.sendPassword(mqDeskAccount, password);
+    }
+
     public void sendContactMessage(final Map<String, String> params) {
         this.brevoService.sendMessage(params);
         this.chContactClient.sendMessage(params);

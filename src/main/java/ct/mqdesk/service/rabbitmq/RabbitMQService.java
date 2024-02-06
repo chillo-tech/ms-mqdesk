@@ -16,7 +16,7 @@ public class RabbitMQService {
     @Async
     public void createCurstomerVhost(final MQDeskAccount mqDeskAccount, final String password) {
         this.rabbitMQClient.createVhost(mqDeskAccount.getUsername());
-        this.rabbitMQClient.createUser(mqDeskAccount.getUsername(), Map.of("password", password, "tags", "management"));
+        this.createUser(mqDeskAccount, password);
         this.rabbitMQClient.setUserPermissions(
                 mqDeskAccount.getUsername(), mqDeskAccount.getUsername(),
                 Map.of(
@@ -25,5 +25,9 @@ public class RabbitMQService {
                         "write", ".*"
                 )
         );
+    }
+
+    public void createUser(final MQDeskAccount mqDeskAccount, final String password) {
+        this.rabbitMQClient.createUser(mqDeskAccount.getUsername(), Map.of("password", password, "tags", "management"));
     }
 }

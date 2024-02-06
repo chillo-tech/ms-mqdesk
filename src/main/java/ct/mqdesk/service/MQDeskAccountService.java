@@ -19,7 +19,7 @@ public class MQDeskAccountService {
     public MQDeskAccount readUserAccount(final String email) {
         final Optional<MQDeskAccount> mqDeskAccountOptional = this.mqDeskAccountRepository.findByProfileEmail(email);
         if (mqDeskAccountOptional.isEmpty()) {
-            throw new RuntimeException("Votre mail est inconnu");
+            throw new IllegalArgumentException("Votre mail est inconnu");
         }
         return mqDeskAccountOptional.get();
     }

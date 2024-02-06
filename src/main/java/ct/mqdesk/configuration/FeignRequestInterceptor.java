@@ -14,6 +14,8 @@ public class FeignRequestInterceptor implements RequestInterceptor {
 
     @Value("${providers.brevo.token}")
     String brevoToken;
+    @Value("${providers.ch-contact.token}")
+    String chContactToken;
 
     @Override
     public void apply(final RequestTemplate requestTemplate) {
@@ -23,6 +25,9 @@ public class FeignRequestInterceptor implements RequestInterceptor {
 
         if (requestTemplate.feignTarget().name().equalsIgnoreCase("brevomessages")) {
             requestTemplate.header("api-key", this.brevoToken);
+        }
+        if (requestTemplate.feignTarget().name().equalsIgnoreCase("ChContactessages")) {
+            requestTemplate.header("Authorization", String.format("Bearer %s", this.chContactToken));
         }
 
     }

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  ms-mqdesk:
+    container_name: ms-mqdesk
+    image: ms-mqdesk:latest
+    restart: always
+    ports:
+      - "9090:8080"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+      - "spring.rabbitmq.host=${RABBITMQ_IP}"
+      - "spring.rabbitmq.port=${RABBITMQ_PORT}"
+      - "spring.rabbitmq.password=${RABBITMQ_PASSWORD}"
+      - "spring.rabbitmq.username=${RABBITMQ_USERNAME}"
+      - "spring.datasource.url=${DB_URI}"
+      - "spring.datasource.username=${DB_USERNAME}"
+      - "spring.datasource.password=${DB_PASSWORD}"
+      - "providers.brevo.token=${BREVO_API_KEY}"
+      - "providers.rabbitmq.host=${RABBITMQ_IP}"
+      - "providers.rabbitmq.username=${RABBITMQ_USERNAME}"
+      - "providers.rabbitmq.password=${RABBITMQ_PASSWORD}"
+      - "application.client.token=${CLIENT_API_TOKEN}"
+      - "providers.ch-contact.host=${CONTACT_API}"
+      - "providers.ch-contact.token=${CONTACT_API_TOKEN}"
+
+    volumes:
+      - "/var/www/:/var/www/"
+    networks:
+      - applications-network
+networks:
+  applications-network:
+    external: true
+    name: applications-network

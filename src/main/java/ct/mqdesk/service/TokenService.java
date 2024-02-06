@@ -3,9 +3,10 @@ package ct.mqdesk.service;
 import ct.mqdesk.entity.ClientApplication;
 import ct.mqdesk.entity.Token;
 import ct.mqdesk.repository.TokenRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +14,30 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 @Slf4j
-@AllArgsConstructor
 @Service
 public class TokenService {
-    private TokenRepository tokenRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final TokenRepository tokenRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    private final String clientApplicationToken;
+
+    public TokenService(
+            final TokenRepository tokenRepository,
+            final BCryptPasswordEncoder passwordEncoder,
+            @Value("${application.client.token: ''}") final String clientApplicationToken) {
+        this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.clientApplicationToken = clientApplicationToken;
+    }
 
     public void generate(final ClientApplication clientApplication) {
-        final String prefix = "mqdesk";
-        final String suffix = RandomStringUtils.random(6, false, true);
+        final String prefix = RandomStringUtils.random(8, true, true);
+        final String suffix = RandomStringUtils.random(8, true, true);
         final String content = RandomStringUtils.random(50, true, true);
-        final String clientToken = String.format("%s_%s_%s", prefix, content, suffix);
+        String clientToken = String.format("%s_%s_%s", prefix, content, suffix);
+        if (!Strings.isEmpty(this.clientApplicationToken)) {
+            clientToken = this.clientApplicationToken;
+        }
         TokenService.log.info(clientToken);
         final Token token = new Token();
         token.setValue(this.passwordEncoder.encode(clientToken));

@@ -22,14 +22,17 @@ public class ProfileController {
 
     @PostMapping(path = "sign-up")
     public void inscription(@RequestBody final Profile profile) {
-        ProfileController.log.info("Inscription");
         this.profileService.inscription(profile);
     }
 
-    @PostMapping(path = "password")
+    @PostMapping(path = "new-password")
     public void sendPassword(@RequestBody final Map<String, String> params) {
-        ProfileController.log.info("password");
-        this.profileService.resetPassword(params);
+        this.profileService.newPassword(params);
+    }
+
+    @PostMapping(path = "contact-us")
+    public void sendContactMessage(@RequestBody final Map<String, String> params) {
+        this.profileService.sendContactMessage(params);
     }
 
 }

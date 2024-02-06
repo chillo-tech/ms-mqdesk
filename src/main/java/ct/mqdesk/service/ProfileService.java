@@ -5,6 +5,7 @@ import ct.mqdesk.entity.Profile;
 import ct.mqdesk.enums.Role;
 import ct.mqdesk.repository.ProfileRepository;
 import ct.mqdesk.service.brevo.BrevoService;
+import ct.mqdesk.service.chcontact.ChContactClient;
 import ct.mqdesk.service.rabbitmq.RabbitMQService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -25,6 +26,7 @@ public class ProfileService implements UserDetailsService {
     private BCryptPasswordEncoder passwordEncoder;
     private BrevoService brevoService;
     private RabbitMQService rabbitMQService;
+    private ChContactClient chContactClient;
 
     public void inscription(Profile profile) {
         if (!profile.getEmail().contains("@")) {
@@ -40,7 +42,6 @@ public class ProfileService implements UserDetailsService {
         }
         final String password = RandomStringUtils.randomAlphanumeric(10);
         final String encodedPassword = this.passwordEncoder.encode(password);
-        profile.setPassword(encodedPassword);
 
         profile.setRole(Role.CUSTOMER);
         profile.setActive(true);
@@ -52,6 +53,7 @@ public class ProfileService implements UserDetailsService {
         username = username.replaceAll("[^A-Za-z0-9]", "-");
         username = String.format("%s-%s", username, RandomStringUtils.random(4, false, true));
         mqDeskAccount.setUsername(username);
+        mqDeskAccount.setPassword(encodedPassword);
         mqDeskAccount = this.mqDeskAccountService.save(mqDeskAccount);
 
         this.rabbitMQService.createCurstomerVhost(mqDeskAccount, password);
@@ -63,21 +65,26 @@ public class ProfileService implements UserDetailsService {
         return null;
     }
 
-    public void resetPassword(final Map<String, String> params) {
-        final String email = params.get("params");
+    public void newPassword(final Map<String, String> params) {
+        final String email = params.get("email");
         if (!email.contains("@")) {
             throw new IllegalArgumentException("Votre mail invalide");
         }
         if (!email.contains(".")) {
             throw new IllegalArgumentException("Votre mail invalide");
         }
-        final Optional<Profile> profileOptional = this.profileRepository.findByEmail(email);
-        if (profileOptional.isEmpty()) {
-            throw new IllegalArgumentException("Votre mail est inconnu");
-        }
-        final MQDeskAccount mqDeskAccount = this.mqDeskAccountService.readUserAccount(email);
+        MQDeskAccount mqDeskAccount = this.mqDeskAccountService.readUserAccount(email);
+        final String password = RandomStringUtils.randomAlphanumeric(10);
+        final String encodedPassword = this.passwordEncoder.encode(password);
+        mqDeskAccount.setPassword(encodedPassword);
+        mqDeskAccount = this.mqDeskAccountService.save(mqDeskAccount);
 
-        //this.rabbitMQService.createCurstomerVhost(mqDeskAccount, mqDeskAccount.getPassword());
-        //this.brevoService.sendIncriptionEmails(mqDeskAccount, mqDeskAccount.getPassword());
+        this.rabbitMQService.createUser(mqDeskAccount, password);
+        this.brevoService.sendPassword(mqDeskAccount, password);
+    }
+
+    public void sendContactMessage(final Map<String, String> params) {
+        this.brevoService.sendMessage(params);
+        this.chContactClient.sendMessage(params);
     }
 }

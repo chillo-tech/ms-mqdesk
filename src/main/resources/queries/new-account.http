@@ -1,4 +1,6 @@
-POST http://localhost:8080/api/inscription
+POST http://localhost:8080/api/signtup
+X-API-SECRET: mqdesk_jKVJsmIBM1bxwiAxd4xJpo3Vh87rRluoQq3u9XW4dR2B8wvpE4_753333
+X-API-KEY: front-mqdesk
 Content-Type: application/json
 
 {

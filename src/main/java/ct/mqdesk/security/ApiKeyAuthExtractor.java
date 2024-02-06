@@ -27,8 +27,8 @@ public class ApiKeyAuthExtractor {
         final String providedSecret = request.getHeader("X-API-SECRET");
         final String providedKey = request.getHeader("X-API-KEY");
 
-        ApiKeyAuthExtractor.log.info("Application key %s", providedKey);
-        ApiKeyAuthExtractor.log.info("Application secret %s", providedSecret);
+        ApiKeyAuthExtractor.log.info("Application key {}", providedKey);
+        ApiKeyAuthExtractor.log.info("Application secret {}", providedSecret);
         final Token token = this.tokenService.findByApplicationNameAndActive(providedKey, true);
 
         final boolean isValidKey = providedKey.equals(token.getApplication().getName());

@@ -21,8 +21,7 @@ jobs:
           username: ${{ secrets.PROD_APPLICATIONS_USERNAME }}
           key: ${{ secrets.PROD_APPLICATIONS_SSH_PRIVATE_KEY }}
           script: |
-            sudo rm -rf ${{ env.FOLDER }}/${{ env.IMAGE }}
-            sudo mkdir -p  ${{ env.FOLDER }}/${{ env.IMAGE }}
+            sudo mkdir -p ${{ env.FOLDER }}/${{ env.IMAGE }}
             sudo chmod ugo+rwx  ${{ env.FOLDER }}/${{ env.IMAGE }}
 
   copy-configs:

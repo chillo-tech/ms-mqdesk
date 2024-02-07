@@ -9,6 +9,7 @@ services:
       - "9090:80"
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
+      - "spring.cloud.openfeign.client.config.default.loggerLevel=full"
       - "spring.rabbitmq.host=${RABBITMQ_IP}"
       - "spring.rabbitmq.port=${RABBITMQ_PORT}"
       - "spring.rabbitmq.password=${RABBITMQ_PASSWORD}"

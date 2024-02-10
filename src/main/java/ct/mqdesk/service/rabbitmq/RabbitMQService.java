@@ -56,7 +56,7 @@ public class RabbitMQService {
                         "apply-to", "queues",
                         "priority", 0,
                         "definition", Map.of(
-                                "max-length", 3,
+                                "max-length", 10,
                                 "overflow", "reject-publish"
 
                         )

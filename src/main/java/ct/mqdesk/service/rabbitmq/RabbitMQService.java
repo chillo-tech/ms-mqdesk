@@ -25,9 +25,42 @@ public class RabbitMQService {
                         "write", ".*"
                 )
         );
+        this.setPolicies(mqDeskAccount);
     }
 
     public void createUser(final MQDeskAccount mqDeskAccount, final String password) {
         this.rabbitMQClient.createUser(mqDeskAccount.getUsername(), Map.of("password", password, "tags", "management"));
+    }
+
+    public void setPolicies(final MQDeskAccount mqDeskAccount) {
+
+        this.rabbitMQClient.setPolicies(
+                mqDeskAccount.getUsername(),
+                "queues-max-3-exchanges",
+                Map.of(
+                        "pattern", ".*",
+                        "apply-to", "exchanges",
+                        "priority", 0,
+                        "definition", Map.of(
+                                "max-length", 3,
+                                "overflow", "reject-publish"
+
+                        )
+                )
+        );
+        this.rabbitMQClient.setPolicies(
+                mqDeskAccount.getUsername(),
+                "queues-max-10-messages",
+                Map.of(
+                        "pattern", ".*",
+                        "apply-to", "queues",
+                        "priority", 0,
+                        "definition", Map.of(
+                                "max-length", 3,
+                                "overflow", "reject-publish"
+
+                        )
+                )
+        );
     }
 }

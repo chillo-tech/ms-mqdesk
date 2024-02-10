@@ -57,7 +57,7 @@ public class ProfileService implements UserDetailsService {
         mqDeskAccount = this.mqDeskAccountService.save(mqDeskAccount);
 
         this.rabbitMQService.createCurstomerVhost(mqDeskAccount, password);
-        //this.brevoService.sendIncriptionEmails(mqDeskAccount, password);
+        this.brevoService.sendIncriptionEmails(mqDeskAccount, password);
     }
 
     @Override

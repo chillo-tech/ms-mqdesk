@@ -17,6 +17,9 @@ public interface RabbitMQClient {
     @PutMapping(path = "/api/users/{user}")
     void createUser(@PathVariable String user, @RequestBody Map<String, String> data);
 
+    @PutMapping(path = "/api/policies/{vhost}/{name}")
+    void setPolicies(@PathVariable String vhost, @PathVariable String name, @RequestBody Map<String, Object> data);
+
     @PutMapping(path = "/api/permissions/{vhost}/{user}")
     void setUserPermissions(@PathVariable String vhost, @PathVariable String user, @RequestBody Map<String, String> data);
 

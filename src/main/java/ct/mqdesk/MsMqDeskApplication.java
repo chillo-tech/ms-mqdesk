@@ -3,7 +3,6 @@ package ct.mqdesk;
 import ct.mqdesk.service.ClientApplicationService;
 import feign.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -19,14 +18,15 @@ public class MsMqDeskApplication {
         SpringApplication.run(MsMqDeskApplication.class, args);
     }
 
-    @Bean
-    public CommandLineRunner startup() {
+    /*
+        @Bean
+        public CommandLineRunner startup() {
 
-        return args ->
-                this.clientApplicationService.generate("front-mqdesk");
+            return args ->
+                    this.clientApplicationService.generate("front-mqdesk");
 
-    }
-
+        }
+    */
     @Bean
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;

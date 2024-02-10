@@ -19,7 +19,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(final RequestTemplate requestTemplate) {
-        FeignRequestInterceptor.log.info("Intercept request {}", requestTemplate.feignTarget().name());
+        FeignRequestInterceptor.log.info("Intercept request {}", requestTemplate);
         requestTemplate.header("content-type", APPLICATION_JSON_VALUE);
         requestTemplate.header("produces", APPLICATION_JSON_VALUE);
 

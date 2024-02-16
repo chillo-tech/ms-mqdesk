@@ -97,7 +97,7 @@ public class BrevoService {
         for (final String key : messageParams.keySet()) {
             context.setVariable(key, messageParams.get(key));
         }
-        final String htmlBody = this.springTemplateEngine.process("customer-password.html", context);
+        final String htmlBody = this.springTemplateEngine.process("customer-message.html", context);
         final Message message = new Message(
                 "Nouveau message sur mqdesk.io",
                 htmlBody,

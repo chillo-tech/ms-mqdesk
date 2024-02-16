@@ -40,7 +40,7 @@ public class ProfileService implements UserDetailsService {
         if (profileOptional.isPresent()) {
             throw new IllegalArgumentException("Votre mail est déjà utilisé");
         }
-        final String password = RandomStringUtils.randomAlphanumeric(10);
+        final String password = RandomStringUtils.randomAlphanumeric(20);
         final String encodedPassword = this.passwordEncoder.encode(password);
 
         profile.setRole(Role.CUSTOMER);
@@ -74,7 +74,7 @@ public class ProfileService implements UserDetailsService {
             throw new IllegalArgumentException("Votre mail invalide");
         }
         MQDeskAccount mqDeskAccount = this.mqDeskAccountService.readUserAccount(email);
-        final String password = RandomStringUtils.randomAlphanumeric(10);
+        final String password = RandomStringUtils.randomAlphanumeric(20);
         final String encodedPassword = this.passwordEncoder.encode(password);
         mqDeskAccount.setPassword(encodedPassword);
         mqDeskAccount = this.mqDeskAccountService.save(mqDeskAccount);
@@ -92,7 +92,7 @@ public class ProfileService implements UserDetailsService {
             throw new IllegalArgumentException("Votre mail invalide");
         }
         MQDeskAccount mqDeskAccount = this.mqDeskAccountService.readUserAccount(email);
-        final String password = RandomStringUtils.randomAlphanumeric(10);
+        final String password = RandomStringUtils.randomAlphanumeric(20);
         final String encodedPassword = this.passwordEncoder.encode(password);
         mqDeskAccount.setPassword(encodedPassword);
         mqDeskAccount = this.mqDeskAccountService.save(mqDeskAccount);
